@@ -1,0 +1,27 @@
+version: '3'
+volumes:
+  blynk-data:
+  blynk-logs:
+services:
+  blynk:
+    image:  hortio/blynk:v0.41
+    command: ["-dataFolder", "/data", "-serverConfig", "/blynk/server.properties"]
+    volumes:
+      - 'blynk-data:/data'
+      - 'blynk-logs:/blynk/logs'
+      - './mail.properties:/blynk/mail.properties'
+      - './server.properties:/blynk/server.properties'
+    ports:
+      - "8080:8080"
+      - "9443:9443"
+      ## If you don't want Let's encrypt certificates or have a reverse proxy on port 80,
+      ## please comment out line below
+      - "81:8080"
+    restart: always
+
+  # Watchtower is a service that periodically checks for versions of your docker containers
+  # and fetches new one. So you always will be up to date.
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
